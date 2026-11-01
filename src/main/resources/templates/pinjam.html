@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pinjam Buku</title>
+</head>
+<body>
+<main>
+    <h1>Pinjam Buku</h1>
+
+    <p th:if="${pesan}" th:text="${pesan}" role="alert"></p>
+
+    <form th:action="@{/pinjam/anggota}" method="post">
+        <label for="idAnggota">Anggota</label>
+        <select id="idAnggota" name="idAnggota" required>
+            <option value="">Pilih anggota</option>
+            <option th:each="anggota : ${daftarAnggota}"
+                    th:value="${anggota.idAnggota}"
+                    th:text="${anggota.nama + ' (' + anggota.idAnggota + ')'}"
+                    th:selected="${anggota.idAnggota == idAnggota}"></option>
+        </select>
+        <button type="submit">Gunakan anggota</button>
+    </form>
+
+    <p th:if="${idAnggota != null}">
+        Anggota aktif: <strong th:text="${idAnggota}"></strong>
+    </p>
+
+    <table>
+        <caption>Daftar buku dan stok tersedia</caption>
+        <thead>
+        <tr><th>Judul</th><th>Stok</th><th>Aksi</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="buku : ${daftarBuku}">
+            <td th:text="${buku.judul}"></td>
+            <td th:text="${buku.stok}"></td>
+            <td>
+                <form th:action="@{/pinjam}" method="post">
+                    <input type="hidden" name="idBuku" th:value="${buku.idBuku}">
+                    <button type="submit" th:disabled="${idAnggota == null}">
+                        Pinjam
+                    </button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(daftarBuku)}">
+            <td colspan="3">Belum ada buku.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p th:if="${bisaReservasi}">
+        Buku sedang habis. Hubungi pustakawan untuk mengajukan reservasi.
+    </p>
+</main>
+</body>
+</html>
